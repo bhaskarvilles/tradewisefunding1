@@ -1,0 +1,337 @@
+jQuery(function(t){var o=function(e){this.$target=e,this.$formWrap=e.closest(".payment_box"),this.params=t.extend({},{is_registration_required:!1,is_logged_in:!1},wc_tokenization_form_params),this.onDisplay=this.onDisplay.bind(this),this.hideForm=this.hideForm.bind(this),this.showForm=this.showForm.bind(this),this.showSaveNewCheckbox=this.showSaveNewCheckbox.bind(this),this.hideSaveNewCheckbox=this.hideSaveNewCheckbox.bind(this),this.$target.on("click change",":input.woocommerce-SavedPaymentMethods-tokenInput",{tokenizationForm:this},this.onTokenChange),t("input#createaccount").on("change",{tokenizationForm:this},this.onCreateAccountChange),this.onDisplay()};o.prototype.onDisplay=function(){0===t(":input.woocommerce-SavedPaymentMethods-tokenInput:checked",this.$target).length&&t(":input.woocommerce-SavedPaymentMethods-tokenInput:last",this.$target).prop("checked",!0),0===this.$target.data("count")&&t(".woocommerce-SavedPaymentMethods-new",this.$target).remove(),0<t("input#createaccount").length&&t("input#createaccount").is(":checked")||this.params.is_logged_in||this.params.is_registration_required?this.showSaveNewCheckbox():this.hideSaveNewCheckbox(),t(":input.woocommerce-SavedPaymentMethods-tokenInput:checked",this.$target).trigger("change")},o.prototype.onTokenChange=function(e){"new"===t(this).val()?(e.data.tokenizationForm.showForm(),e.data.tokenizationForm.showSaveNewCheckbox()):(e.data.tokenizationForm.hideForm(),e.data.tokenizationForm.hideSaveNewCheckbox())},o.prototype.onCreateAccountChange=function(e){t(this).is(":checked")?e.data.tokenizationForm.showSaveNewCheckbox():e.data.tokenizationForm.hideSaveNewCheckbox()},o.prototype.hideForm=function(){t(".wc-payment-form",this.$formWrap).hide()},o.prototype.showForm=function(){t(".wc-payment-form",this.$formWrap).show()},o.prototype.showSaveNewCheckbox=function(){t(".woocommerce-SavedPaymentMethods-saveNew",this.$formWrap).show()},o.prototype.hideSaveNewCheckbox=function(){t(".woocommerce-SavedPaymentMethods-saveNew",this.$formWrap).hide()},t.fn.wc_tokenization_form=function(e){return new o(this),this},t(document.body).on("updated_checkout wc-credit-card-form-init",function(){t("ul.woocommerce-SavedPaymentMethods").each(function(){t(this).wc_tokenization_form()})})});;
+!function(t,a,e){"function"==typeof define&&define.amd?define(["jquery"],t):"object"==typeof exports&&"undefined"==typeof Meteor?module.exports=t(require("jquery")):t(a||e)}(function(o){"use strict";function i(u,M,y){var b={invalid:[],getCaret:function(){try{var t,a=0,e=u.get(0),n=document.selection,s=e.selectionStart;return n&&-1===navigator.appVersion.indexOf("MSIE 10")?((t=n.createRange()).moveStart("character",-b.val().length),a=t.text.length):!s&&"0"!==s||(a=s),a}catch(t){}},setCaret:function(t){try{var a,e;u.is(":focus")&&((e=u.get(0)).setSelectionRange?e.setSelectionRange(t,t):((a=e.createTextRange()).collapse(!0),a.moveEnd("character",t),a.moveStart("character",t),a.select()))}catch(t){}},events:function(){u.on("keydown.mask",function(t){u.data("mask-keycode",t.keyCode||t.which),u.data("mask-previus-value",u.val()),u.data("mask-previus-caret-pos",b.getCaret()),b.maskDigitPosMapOld=b.maskDigitPosMap}).on(o.jMaskGlobals.useInput?"input.mask":"keyup.mask",b.behaviour).on("paste.mask drop.mask",function(){setTimeout(function(){u.keydown().keyup()},100)}).on("change.mask",function(){u.data("changed",!0)}).on("blur.mask",function(){r===b.val()||u.data("changed")||u.trigger("change"),u.data("changed",!1)}).on("blur.mask",function(){r=b.val()}).on("focus.mask",function(t){!0===y.selectOnFocus&&o(t.target).select()}).on("focusout.mask",function(){y.clearIfNotMatch&&!s.test(b.val())&&b.val("")})},getRegexMask:function(){for(var t,a,e,n,s,r=[],o=0;o<M.length;o++)(e=w.translation[M.charAt(o)])?(t=e.pattern.toString().replace(/.{1}$|^.{1}/g,""),a=e.optional,(e=e.recursive)?(r.push(M.charAt(o)),n={digit:M.charAt(o),pattern:t}):r.push(a||e?t+"?":t)):r.push(M.charAt(o).replace(/[-\/\\^$*+?.()|[\]{}]/g,"\\$&"));return s=r.join(""),n&&(s=s.replace(new RegExp("("+n.digit+"(.*"+n.digit+")?)"),"($1)?").replace(new RegExp(n.digit,"g"),n.pattern)),new RegExp(s)},destroyEvents:function(){u.off(["input","keydown","keyup","paste","drop","blur","focusout",""].join(".mask "))},val:function(t){var a=u.is("input")?"val":"text",a=0<arguments.length?(u[a]()!==t&&u[a](t),u):u[a]();return a},calculateCaretPosition:function(t){var a=b.getMasked(),e=b.getCaret();if(t!==a){for(var n=u.data("mask-previus-caret-pos")||0,s=a.length,t=t.length,r=0,o=0,i=0,l=0,c=0,c=e;c<s&&b.maskDigitPosMap[c];c++)o++;for(c=e-1;0<=c&&b.maskDigitPosMap[c];c--)r++;for(c=e-1;0<=c;c--)b.maskDigitPosMap[c]&&i++;for(c=n-1;0<=c;c--)b.maskDigitPosMapOld[c]&&l++;t<e?e=10*s:e<=n&&n!==t?b.maskDigitPosMapOld[e]||(t=e,e-=l-i,b.maskDigitPosMap[e-=r]&&(e=t)):n<e&&(e+=i-l,e+=o)}return e},behaviour:function(t){t=t||window.event,b.invalid=[];var a=u.data("mask-keycode");if(-1===o.inArray(a,w.byPassKeys)){var e=b.getMasked(),a=b.getCaret(),n=u.data("mask-previus-value")||"";return setTimeout(function(){b.setCaret(b.calculateCaretPosition(n))},o.jMaskGlobals.keyStrokeCompensation),b.val(e),b.setCaret(a),b.callbacks(t)}},getMasked:function(t,a){for(var e,n,s=[],r=void 0===a?b.val():a+"",o=0,i=M.length,l=0,c=r.length,u=1,k="push",p=-1,d=0,f=[],h=y.reverse?(k="unshift",u=-1,e=0,o=i-1,l=c-1,function(){return-1<o&&-1<l}):(e=i-1,function(){return o<i&&l<c});h();){var v=M.charAt(o),g=r.charAt(l),m=w.translation[v];m?(g.match(m.pattern)?(s[k](g),m.recursive&&(-1===p?p=o:o===e&&o!==p&&(o=p-u),e===p&&(o-=u)),o+=u):g===n?(d--,n=void 0):m.optional?(o+=u,l-=u):m.fallback?(s[k](m.fallback),o+=u,l-=u):b.invalid.push({p:l,v:g,e:m.pattern}),l+=u):(t||s[k](v),g===v?(f.push(l),l+=u):(n=v,f.push(l+d),d++),o+=u)}a=M.charAt(e);i!==c+1||w.translation[a]||s.push(a);a=s.join("");return b.mapMaskdigitPositions(a,f,c),a},mapMaskdigitPositions:function(t,a,e){var n=y.reverse?t.length-e:0;b.maskDigitPosMap={};for(var s=0;s<a.length;s++)b.maskDigitPosMap[a[s]+n]=1},callbacks:function(t){function a(t,a,e){"function"==typeof y[t]&&a&&y[t].apply(this,e)}var e=b.val(),n=e!==r,s=[e,t,u,y];a("onChange",!0==n,s),a("onKeyPress",!0==n,s),a("onComplete",e.length===M.length,s),a("onInvalid",0<b.invalid.length,[e,t,u,b.invalid,y])}};u=o(u);var s,w=this,r=b.val();M="function"==typeof M?M(b.val(),void 0,u,y):M,w.mask=M,w.options=y,w.remove=function(){var t=b.getCaret();return w.options.placeholder&&u.removeAttr("placeholder"),u.data("mask-maxlength")&&u.removeAttr("maxlength"),b.destroyEvents(),b.val(w.getCleanVal()),b.setCaret(t),u},w.getCleanVal=function(){return b.getMasked(!0)},w.getMaskedVal=function(t){return b.getMasked(!1,t)},w.init=function(t){if(t=t||!1,y=y||{},w.clearIfNotMatch=o.jMaskGlobals.clearIfNotMatch,w.byPassKeys=o.jMaskGlobals.byPassKeys,w.translation=o.extend({},o.jMaskGlobals.translation,y.translation),w=o.extend(!0,{},w,y),s=b.getRegexMask(),t)b.events(),b.val(b.getMasked());else{y.placeholder&&u.attr("placeholder",y.placeholder),u.data("mask")&&u.attr("autocomplete","off");for(var a=0,e=!0;a<M.length;a++){var n=w.translation[M.charAt(a)];if(n&&n.recursive){e=!1;break}}e&&u.attr("maxlength",M.length).data("mask-maxlength",!0),b.destroyEvents(),b.events();t=b.getCaret();b.val(b.getMasked()),b.setCaret(t)}},w.init(!u.is("input"))}o.maskWatchers={};function a(){var t=o(this),a={},e="data-mask-",n=t.attr("data-mask");if(t.attr(e+"reverse")&&(a.reverse=!0),t.attr(e+"clearifnotmatch")&&(a.clearIfNotMatch=!0),"true"===t.attr(e+"selectonfocus")&&(a.selectOnFocus=!0),l(t,n,a))return t.data("mask",new i(this,n,a))}function l(t,a,e){e=e||{};var n=o(t).data("mask"),s=JSON.stringify,t=o(t).val()||o(t).text();try{return"function"==typeof a&&(a=a(t)),"object"!=typeof n||s(n.options)!==s(e)||n.mask!==a}catch(t){}}o.fn.mask=function(t,a){a=a||{};function e(){if(l(this,t,a))return o(this).data("mask",new i(this,t,a))}var n=this.selector,s=o.jMaskGlobals,r=s.watchInterval,s=a.watchInputs||s.watchInputs;return o(this).each(e),n&&""!==n&&s&&(clearInterval(o.maskWatchers[n]),o.maskWatchers[n]=setInterval(function(){o(document).find(n).each(e)},r)),this},o.fn.masked=function(t){return this.data("mask").getMaskedVal(t)},o.fn.unmask=function(){return clearInterval(o.maskWatchers[this.selector]),delete o.maskWatchers[this.selector],this.each(function(){var t=o(this).data("mask");t&&t.remove().removeData("mask")})},o.fn.cleanVal=function(){return this.data("mask").getCleanVal()},o.applyDataMask=function(t){((t=t||o.jMaskGlobals.maskElements)instanceof o?t:o(t)).filter(o.jMaskGlobals.dataMaskAttr).each(a)};var t,e,n={maskElements:"input,td,span,div",dataMaskAttr:"*[data-mask]",dataMask:!0,watchInterval:300,watchInputs:!0,keyStrokeCompensation:10,useInput:!/Chrome\/[2-4][0-9]|SamsungBrowser/.test(window.navigator.userAgent)&&(t="input",e=document.createElement("div"),(n=(t="on"+t)in e)||(e.setAttribute(t,"return;"),n="function"==typeof e[t]),e=null,n),watchDataMask:!1,byPassKeys:[9,16,17,18,36,37,38,39,40,91],translation:{0:{pattern:/\d/},9:{pattern:/\d/,optional:!0},"#":{pattern:/\d/,recursive:!0},A:{pattern:/[a-zA-Z0-9]/},S:{pattern:/[a-zA-Z]/}}};o.jMaskGlobals=o.jMaskGlobals||{},(n=o.jMaskGlobals=o.extend(!0,{},n,o.jMaskGlobals)).dataMask&&o.applyDataMask(),setInterval(function(){o.jMaskGlobals.watchDataMask&&o.applyDataMask()},n.watchInterval)},window.jQuery,window.Zepto);
+;
+/* global enr_frontend_params */
+
+jQuery( function ( $ ) {
+    'use strict';
+
+    var is_blocked = function ( $node ) {
+        return $node.is( '.processing' ) || $node.parents( '.processing' ).length;
+    };
+
+    /**
+     * Block a node visually for processing.
+     *
+     * @param {JQuery Object} $node
+     */
+    var block = function ( $node ) {
+        $.blockUI.defaults.overlayCSS.cursor = 'wait';
+
+        if ( !is_blocked( $node ) ) {
+            $node.addClass( 'processing' ).block( {
+                message: null,
+                overlayCSS: {
+                    background: '#fff',
+                    opacity: 0.6
+                }
+            } );
+        }
+    };
+
+    /**
+     * Unblock a node after processing is complete.
+     *
+     * @param {JQuery Object} $node
+     */
+    var unblock = function ( $node ) {
+        $node.removeClass( 'processing' ).unblock();
+    };
+
+    // Hide variable level limit notice when it is limited to variation level
+    if ( 'yes' === enr_frontend_params.hide_variable_limited_notice && $( 'form.variations_form' ).length && $( 'form.variations_form' ).find( '.limited-subscription-notice' ).length ) {
+        $( 'form.variations_form' ).find( '.limited-subscription-notice' ).hide();
+    }
+
+    function maybeProcessSwitchRequest() {
+        if ( window.location.href.indexOf( 'switch-subscription' ) != -1 && window.location.href.indexOf( 'item' ) != -1 ) {
+            $( '.product form.cart' ).prop( 'action', '' );
+        }
+    }
+
+    /**
+     * Handle product page subscribe events.
+     */
+    var wcs_variations_form = {
+        variationForm: $( '.variations_form' ),
+        cartForm: $( 'form.cart' ),
+        init: function () {
+            $( document ).on( 'found_variation.wc-variation-form', this.onFoundVariation );
+            $( document ).on( 'reset_data', this.onResetVariation );
+        },
+        onFoundVariation: function ( evt, variation ) {
+            wcs_variations_form.onResetVariation();
+
+            if ( variation.enr_limited_subscription_notice ) {
+                wcs_variations_form.variationForm.find( '.woocommerce-variation-add-to-cart' ).after( variation.enr_limited_subscription_notice );
+            }
+
+            if ( variation.enr_resubscribe_link ) {
+                wcs_variations_form.variationForm.find( '.woocommerce-variation-add-to-cart' ).after( variation.enr_resubscribe_link );
+            }
+
+            if ( variation.enr_subscribe_now_form ) {
+                wcs_variations_form.variationForm.find( '.woocommerce-variation-add-to-cart' ).before( variation.enr_subscribe_now_form );
+                wcs_variations_form.variationForm.find( '.single_add_to_cart_button' ).text( variation.enr_single_add_to_cart_text );
+                wcs_variations_form.variationForm.find( '.enr-subscribe-now-wrapper #enr_subscribe_now' ).change();
+            }
+            
+            maybeProcessSwitchRequest();
+        },
+        onResetVariation: function () {
+            if ( wcs_variations_form.variationForm.find( '.enr-variation-wrapper' ).length ) {
+                wcs_variations_form.variationForm.find( '.enr-variation-wrapper' ).remove();
+            }
+
+            if ( wcs_variations_form.variationForm.find( '.enr-subscribe-now-wrapper' ).length ) {
+                wcs_variations_form.variationForm.find( '.enr-subscribe-now-wrapper' ).parent().remove();
+            }
+
+            wcs_variations_form.variationForm.find( '.single_add_to_cart_button' ).removeClass( 'enr_single_subscribe_button' ).text( enr_frontend_params.single_add_to_cart_text );
+        },
+    };
+
+    /**
+     * Handle subscribe now events.
+     */
+    var wcs_subscribe_now = {
+        wrapper: $( '.enr-subscribe-now-wrapper' ),
+        init: function () {
+            $( document ).on( 'change', '#enr_subscribe_now,#enr_subscribe_plans,#enr_subscribe_period,#enr_subscribe_period_interval,#enr_subscribe_length', this.updateAction );
+            $( document ).on( 'updated_wc_div, updated_cart_totals', this.mayBeShowForm );
+
+            if ( this.wrapper.length > 0 ) {
+                this.wrapper.find( '#enr_subscribe_now' ).change();
+                maybeProcessSwitchRequest();
+            }
+        },
+        showForm: function ( node ) {
+            var wrapper = node;
+            wrapper = node.closest( '.enr-subscribe-now-wrapper' );
+
+            if ( wrapper.length > 0 ) {
+                if ( wrapper.find( '#enr_subscribe_now' ).is( ':checked' ) ) {
+                    wrapper.find( 'tr:gt(0)' ).slideDown();
+                } else {
+                    wrapper.find( 'tr:gt(0)' ).slideUp();
+                }
+            }
+        },
+        mayBeShowForm: function () {
+            wcs_subscribe_now.showForm( wcs_subscribe_now.wrapper );
+        },
+        updateAction: function ( evt, refreshed ) {
+            evt.preventDefault();
+
+            var $this = $( evt.currentTarget );
+            refreshed = refreshed || false;
+
+            wcs_subscribe_now.showForm( $this );
+            block( wcs_subscribe_now.getNode() );
+
+            $.ajax( {
+                type: 'POST',
+                url: enr_frontend_params.ajax_url,
+                data: {
+                    action: '_enr_subscribe_now',
+                    security: enr_frontend_params.subscribe_now_nonce,
+                    is_switch_request: enr_frontend_params.is_switch_request,
+                    data: $this.closest( '.enr-subscribe-now-wrapper' ).find( ':input[name]' ).serialize()
+                },
+                success: function ( response ) {
+                    if ( response.success ) {
+                        $this.closest( response.data.subscribe_wrapper_class ).empty().append( response.data.html );
+                        wcs_subscribe_now.showForm( $this );
+
+                        if ( $( '.single_add_to_cart_button' ).length ) {
+                            if ( '1' !== enr_frontend_params.is_switch_request && $this.closest( '.enr-subscribe-now-wrapper' ).find( '#enr_subscribe_now' ).is( ':checked' ) ) {
+                                $( '.single_add_to_cart_button' ).addClass( 'enr_single_subscribe_button' ).text( enr_frontend_params.subscribe_now_button_text );
+                            } else {
+                                $( '.single_add_to_cart_button' ).removeClass( 'enr_single_subscribe_button' ).text( enr_frontend_params.single_add_to_cart_text );
+                            }
+                        }
+
+                        if ( false === response.data.refresh || true === refreshed ) {
+                            $( document.body ).trigger( 'update_checkout' );
+
+                            if ( $( '.woocommerce-cart-form' ).length ) {
+                                $( document.body ).trigger( 'wc_update_cart' );
+                            }
+                        } else {
+                            $( '#enr_subscribe_now' ).trigger( 'change', [ true ] );
+                        }
+                    }
+                },
+                complete: function () {
+                    unblock( wcs_subscribe_now.getNode() );
+                }
+            } );
+            return false;
+        },
+        getNode: function () {
+            if ( $( '.woocommerce-cart-form' ).length ) {
+                return $( 'div.cart_totals' );
+            } else if ( $( '.woocommerce-checkout' ).length ) {
+                return $( '.woocommerce-checkout-payment, .woocommerce-checkout-review-order-table' ).closest( 'form' );
+            } else {
+                return $( '.enr-subscribe-now-wrapper' );
+            }
+        },
+    };
+
+    wcs_variations_form.init();
+    wcs_subscribe_now.init();
+} );
+;
+/* 
+ * Hooks into payment methods radio buttons
+ * 
+ * depends on woocommerce.js
+ */
+jQuery(function() 
+{
+	var pay_order_page = jQuery('#add_fee_info_pay');
+	
+	if(pay_order_page.length != 0)
+	{
+			//	bugfix in WC core - ensure, that the payment gateway for the order is selected - not the first one as in core
+		var gateway = pay_order_page.attr('add_fee_paymethod');
+		var gateway_sel = jQuery('#payment').find("input[name='payment_method']:checked").attr('value');
+
+		if( gateway !== gateway_sel )
+		{
+			jQuery(".payment_methods input[name='payment_method'][value='"+gateway+"']").attr("checked",true);
+		}
+		
+		var fixed_gateway = pay_order_page.attr('add_fee_fixed_gateway');
+		if(fixed_gateway === 'yes')
+		{
+			jQuery('body').find('form#order_review .payment_methods li').each(function ()
+			{
+				var radio = jQuery(this).find('input.input-radio');
+				if((radio.length > 0) && (!radio.is(':checked'))){
+					jQuery(this).remove();
+				}
+				return;
+			});
+		}
+
+		jQuery( '.payment_methods input.input-radio' ).on( 'change', function()
+		{
+			jQuery('#addfeeerror').remove();
+				
+				
+				// Block write panel - wc_checkout_params.ajax_loader_url seems to have been removed
+//				var selector = ( 'undefined' !== wc_checkout_params.ajax_loader_url ) ? '.woocommerce' : '.woocommerce-checkout-payment, .woocommerce-checkout-review-order-table';
+				
+//				if( 'undefined' !== wc_checkout_params.ajax_loader_url )
+//				{	
+//					jQuery(selector).block({message: null, overlayCSS: {background: '#fff url(' + wc_checkout_params.ajax_loader_url + ') no-repeat center', backgroundSize: '16px 16px', opacity: 0.6}});
+//				}
+//				else
+//				{
+//					jQuery(selector).block({message: null, overlayCSS: {background: '#fff', opacity: 0.6}});
+//				}
+				
+			var selector = '.woocommerce';
+			jQuery(selector).block({message: null, overlayCSS: {background: '#fff url(' + add_fee_vars.add_fee_loader + ') no-repeat center', backgroundSize: '16px 16px', opacity: 0.6}});
+
+
+			var senddata = {
+				action: pay_order_page.attr('add_fee_action'),
+				add_fee_order: pay_order_page.attr('add_fee_order'),
+				add_fee_pay: pay_order_page.attr('add_fee_pay'),
+				add_fee_paymethod: jQuery(this).attr('value'),
+				add_fee_key: pay_order_page.attr('add_fee_key'),
+				add_fee_nonce: add_fee_vars.add_fee_nonce
+			};
+				
+			jQuery.ajax({
+					type: "POST",
+					url: add_fee_vars.add_fee_ajaxurl,
+					dataType: 'json',
+					cache: false,
+					data: senddata,
+					success	: function(response, textStatus, jqXHR) {	
+							if(response.success){
+								if(response.recalc) {
+									jQuery('.shop_table').replaceWith(response.message);
+									jQuery('#payment .form-row').show();
+								}
+							}
+							else {
+								jQuery('#payment .form-row').hide();
+								alert(response.alert);
+								jQuery('#order_review').before(response.message);
+							};
+						},
+					error: function(testObj) {
+							jQuery('#payment .form-row').hide();
+							alert(add_fee_vars.alert_ajax_error);
+						},
+					complete: function(test) {
+							jQuery(selector).unblock();
+						}
+				});
+				
+		});
+			
+		//	@since 3.2.3: fixes problem with payment method N/A for new created orders in backend
+		setTimeout( function()
+		{
+			jQuery( '#payment' ).find( "input[name='payment_method']:checked" ).trigger( 'change' );
+		}, 100 );
+		
+			
+		return false;
+	}
+	
+	/**
+	 * These 2 variables are a try for a core fix that resets the payment gateway to the preselected
+	 * 
+	 */
+	var wc_add_fees_payment_selected_id = null;
+	var wc_add_fees_payment_ignore_change = false;
+
+		//	standard checkout page
+	jQuery('.woocommerce').on('change', '.payment_methods .input-radio', function()
+	{
+		if( wc_add_fees_payment_ignore_change )
+		{
+			return;
+		}
+
+		wc_add_fees_payment_selected_id = jQuery(this).attr('id');
+
+		jQuery('body').trigger('update_checkout');
+	});
+	
+	
+	/**
+	 * This is a try for a fix in wc core - can be removed completely when core is fixed
+	 * 
+	 * added with 
+	 */
+	jQuery( document.body ).on( 'updated_checkout', function()
+	{
+		if( wc_add_fees_payment_selected_id === null )
+		{
+			return;
+		}
+
+		var new_selected = jQuery( '.payment_methods .input-radio:checked');
+
+		if( wc_add_fees_payment_selected_id === new_selected.attr('id') )
+		{
+			return;
+		}
+
+		wc_add_fees_payment_ignore_change = true;
+
+		jQuery( '.payment_methods #' + wc_add_fees_payment_selected_id ).prop("checked", true );
+
+		wc_add_fees_payment_ignore_change = false;
+		wc_add_fees_payment_selected_id = null;
+	});
+
+});;
